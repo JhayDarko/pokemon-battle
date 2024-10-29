@@ -21,7 +21,7 @@ Este proyecto es un simulador de batallas Pokémon, diseñado para emular combat
 - **`Move`**
   - La clase base para los movimientos de Pokémon. Incluye los atributos y métodos comunes para los movimientos de ataque y defensa que cada Pokémon puede aprender.
 
-  - **`Type`**
+- **`Type`**
   - La clase para los tipos de los pokémon. Incluye todas las efectividades con los demas tipos, las cuales se usan para distintos cálculos.
 
 - **`ATK` (extends `Move`)**
