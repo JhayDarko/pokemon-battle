@@ -491,7 +491,7 @@ public class Battle {
             double baseDamage = ((level * 2.0 / 5.0 + 2) * power * ((double) attack / defense)) / 50.0 + 2;
             double modifier = (85 + random.nextInt(16)) * 0.01;
             int damage = (int) (baseDamage * stab * effectiveness * modifier * critical);
-            System.out.printf("%s ha usado %s.%n", attacker.getName(), move.getName());
+            System.out.printf("%n%s ha usado %s.%n", attacker.getName(), move.getName());
             if (critical > 1.0 && damage > 0) {
                 System.out.println("!Golpe crítico¡");
             }
@@ -517,7 +517,7 @@ public class Battle {
                 System.out.println("No afecta a " + defender.getName());
             }
         } else {
-            System.out.printf("%s ha usado %s.%n", attacker.getName(), move.getName());
+            System.out.printf("%n%s ha usado %s.%n", attacker.getName(), move.getName());
             System.out.println(attacker.getName() + " falló el ataque.");
         }
     }
@@ -651,11 +651,11 @@ public class Battle {
     public static void executeTurn(PKMN attacker, Move aMove, PKMN defender, Move dMove, Team aTeam, Team dTeam) {
         useMove(attacker, aMove, defender);
         if (isPokemonFainted(defender)) {
-            System.out.printf("%s ha sido debilitado.%n", defender.getName());
+            System.out.printf("%n%s ha sido debilitado.%n", defender.getName());
         } else {
             useMove(defender, dMove, attacker);
             if (isPokemonFainted(attacker)) {
-                System.out.printf("%s ha sido debilitado.%n", attacker.getName());
+                System.out.printf("%n%s ha sido debilitado.%n", attacker.getName());
             }
         }
     }
