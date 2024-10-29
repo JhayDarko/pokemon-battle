@@ -245,6 +245,10 @@ public class Battle {
     public static PKMN lapras = new PKMN("Lapras", agua, hielo, 130, 85, 80, 85, 95, 60);
     public static PKMN golisopod = new PKMN("Golisopod", bicho, agua, 75, 125, 140, 60, 90, 40);
     public static PKMN garchomp = new PKMN("Garchomp", dragon, tierra, 108, 130, 95, 80, 85, 102);
+    public static PKMN lycanroc = new PKMN("Lycanroc", roca, nulo, 75, 115, 65, 55, 105, 82);
+    public static PKMN gallade = new PKMN("Gallade", lucha, psiquico, 68, 125, 65, 115, 110, 80);
+
+
 
     static {
         loadMoves();
@@ -410,6 +414,16 @@ public class Battle {
         garchomp.assignMove(garraDragon, 1);
         garchomp.assignMove(rocaAfilada, 2);
         garchomp.assignMove(llamarada, 3);
+
+        lycanroc.assignMove(triturar, 0);
+        lycanroc.assignMove(terremoto, 1);
+        lycanroc.assignMove(rocaAfilada, 2);
+        lycanroc.assignMove(carantoña, 3);
+
+        gallade.assignMove(aBocajarro, 0);
+        gallade.assignMove(puñoBala, 1);
+        gallade.assignMove(triturar, 2);
+        gallade.assignMove(esferaAural, 3);
     }
 
     public static Dex dex = new Dex();
@@ -451,6 +465,9 @@ public class Battle {
         dex.addPKMN(131, lapras);
         dex.addPKMN(792, golisopod);
         dex.addPKMN(445, garchomp);
+        dex.addPKMN(745, lycanroc);
+        dex.addPKMN(475, gallade);
+
     }
 
     public static int calculateDamage(PKMN attacker, Move move, PKMN defender) {
