@@ -12,7 +12,7 @@ public class Team {
     }
 
     public boolean addToTeam(PKMN pokemon) {
-        if (count < 3) {
+        if (count < teamSize) {
             team[count] = pokemon;
             count++;
             return true;
@@ -55,7 +55,6 @@ public class Team {
     }
 
     public void showTeam() {
-        System.out.println("\n--Equipo Pokémon--\n");
         if (count == 0) {
             System.out.println("El equipo está vacío.");
         } else {

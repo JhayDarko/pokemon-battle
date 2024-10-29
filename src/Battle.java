@@ -130,9 +130,9 @@ public class Battle {
 
         psiquico.addEffectiveness("Lucha", 2.0);
         psiquico.addEffectiveness("Veneno", 2.0);
-        psiquico.addEffectiveness("Siniestro", 0.5);
         psiquico.addEffectiveness("Psíquico", 0.5);
         psiquico.addEffectiveness("Fantasma", 0.5);
+        psiquico.addEffectiveness("Siniestro", 0.0);
 
         roca.addEffectiveness("Fuego", 2.0);
         roca.addEffectiveness("Hielo", 2.0);
@@ -144,6 +144,7 @@ public class Battle {
 
         siniestro.addEffectiveness("Psíquico", 2.0);
         siniestro.addEffectiveness("Fantasma", 2.0);
+        siniestro.addEffectiveness("Hada", 0.5);
         siniestro.addEffectiveness("Lucha", 0.5);
         siniestro.addEffectiveness("Siniestro", 0.5);
 
@@ -153,15 +154,19 @@ public class Battle {
         tierra.addEffectiveness("Agua", 0.5);
         tierra.addEffectiveness("Planta", 0.5);
         tierra.addEffectiveness("Veneno", 0.5);
+        tierra.addEffectiveness("Volador", 0.0);
 
         veneno.addEffectiveness("Planta", 2.0);
         veneno.addEffectiveness("Hada", 2.0);
-        veneno.addEffectiveness("Acero", 0.5);
         veneno.addEffectiveness("Fantasma", 0.5);
+        veneno.addEffectiveness("Roca", 0.5);
+        veneno.addEffectiveness("Siniestro", 0.5);
+        veneno.addEffectiveness("Acero", 0.0);
 
         volador.addEffectiveness("Bicho", 2.0);
         volador.addEffectiveness("Lucha", 2.0);
         volador.addEffectiveness("Planta", 2.0);
+        volador.addEffectiveness("Acero", 0.5);
         volador.addEffectiveness("Roca", 0.5);
         volador.addEffectiveness("Eléctrico", 0.5);
     }
@@ -246,7 +251,7 @@ public class Battle {
     }
 
     private static void loadMoves() {
-        lucario.assignMove(aBocajarro, 0);
+        lucario.assignMove(esferaAural, 0);
         lucario.assignMove(puñoBala, 1);
         lucario.assignMove(pulsoDragon, 2);
         lucario.assignMove(velocidadExtrema, 3);
@@ -484,7 +489,7 @@ public class Battle {
         double hitChance = 0.01 * move.getAccuracy() * (attacker.getPrecision() / defender.getEvasion());
         return Math.random() < hitChance;
     }
-        
+
     public static void useMove(PKMN attacker, Move move, PKMN defender) {
         move.reducePp();
         if (doesAttackHit(attacker, defender, move)) {
@@ -495,6 +500,7 @@ public class Battle {
                 System.out.println("No afecta a " + defender.getName());
             }
         } else {
+            System.out.printf("%s ha usado %s.%n", attacker.getName(), move.getName());
             System.out.println(attacker.getName() + " falló el ataque.");
         }
     }
@@ -625,18 +631,26 @@ public class Battle {
         return team.isEmpty();
     }
 
-    public static void executeTurn(PKMN attacker, Move move, PKMN defender, Team defenderTeam) {
-        int damage = calculateDamage(attacker, move, defender);
-        defender.takeDamage(damage);
+    public static void executeTurn(PKMN attacker, Move aMove, PKMN defender, Move dMove, Team aTeam, Team dTeam) {
+        useMove(attacker, aMove, defender);
         if (isPokemonFainted(defender)) {
             System.out.printf("%s ha sido debilitado.%n", defender.getName());
-            defenderTeam.removePokemon(defender);
+        } else {
+            useMove(defender, dMove, attacker);
+            if (isPokemonFainted(attacker)) {
+                System.out.printf("%s ha sido debilitado.%n", attacker.getName());
+            }
         }
     }
 
     public static void battle(Team playerTeam, Team cpuTeam) {
         PKMN playerCurrent = playerTeam.getPokemon(0);
         PKMN cpuCurrent = cpuTeam.getPokemon(random.nextInt(playerTeam.getCurrentSize()));
+
+        System.out.println("\n--Tu equipo--\n");
+        playerTeam.showTeam();
+        System.out.println("\n--Equipo rival--\n");
+        cpuTeam.showTeam();
 
         while (!isTeamDefeated(playerTeam) && !isTeamDefeated(cpuTeam)) {
             showBattleInfo(playerCurrent, cpuCurrent);
@@ -651,11 +665,7 @@ public class Battle {
             Team firstTeam = (firstAttacker == playerCurrent) ? playerTeam : cpuTeam;
             Team secondTeam = (firstAttacker == playerCurrent) ? cpuTeam : playerTeam;
 
-            executeTurn(firstAttacker, firstMove, secondAttacker, secondTeam);
-            if (!isPokemonFainted(secondAttacker)) {
-                executeTurn(secondAttacker, secondMove, firstAttacker, firstTeam);
-            }
-
+            executeTurn(firstAttacker, firstMove, secondAttacker, secondMove, firstTeam, secondTeam);
             if (isPokemonFainted(playerCurrent)) {
                 playerTeam.removePokemon(playerCurrent);
                 if (!playerTeam.isEmpty()) {
@@ -676,9 +686,63 @@ public class Battle {
         }
     }
 
+    public static int selectTeamSize() {
+        int teamSize = -1;
+
+        System.out.println("Selecciona el tamaño de tu equipo (1, 3, o 6):");
+        while (teamSize != 1 && teamSize != 3 && teamSize != 6) {
+            try {
+                System.out.print("Tamaño del equipo: ");
+                teamSize = scan.nextInt();
+
+                if (teamSize != 1 && teamSize != 3 && teamSize != 6) {
+                    System.err.println("Entrada inválida. Debes ingresar 1, 3, o 6.");
+                }
+            } catch (InputMismatchException e) {
+                System.err.println("Entrada inválida. Debes ingresar un número.");
+                scan.nextLine();
+            }
+        }
+        return teamSize;
+    }
+
+    public static int selectDifficulty(int teamSize) {
+        int choice = 0;
+
+        System.out.println("Selecciona el nivel de dificultad:");
+        System.out.println("1. Fácil");
+        System.out.println("2. Medio");
+        System.out.println("3. Difícil");
+
+        while (choice < 1 || choice > 3) {
+            try {
+                System.out.print("Ingresa el número correspondiente a la dificultad: ");
+                choice = scan.nextInt();
+
+                switch (choice) {
+                    case 1 ->
+                        teamSize--;
+                    case 3 ->
+                        teamSize++;
+                    default ->
+                        System.err.println("Entrada inválida. Por favor, ingresa 1, 2 o 3.");
+                }
+            } catch (InputMismatchException e) {
+                System.err.println("Entrada inválida. Por favor, ingresa un número (1, 2 o 3).");
+                scan.nextLine();
+            }
+        }
+        return teamSize;
+    }
+
     public void start() {
-        Team playerTeam = selectTeam(dex, 3);
-        Team cpuTeam = setRandomTeam(dex, 3);
+        int teamSize = selectTeamSize();
+        int rivalTeamSize = teamSize;
+        if (teamSize > 1) {
+            rivalTeamSize = selectDifficulty(teamSize);
+        }
+        Team playerTeam = selectTeam(dex, teamSize);
+        Team cpuTeam = setRandomTeam(dex, rivalTeamSize);
         battle(playerTeam, cpuTeam);
     }
 }
