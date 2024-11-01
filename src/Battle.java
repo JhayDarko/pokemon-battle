@@ -311,13 +311,13 @@ public class Battle {
         salamence.assignMove(velocidadExtrema, 3);
 
         hydreigon.assignMove(bolaSombra, 0);
-        hydreigon.assignMove(puñoTrueno, 1);
+        hydreigon.assignMove(pulsoDragon, 1);
         hydreigon.assignMove(megacuerno, 2);
         hydreigon.assignMove(rayo, 3);
 
         goodra.assignMove(hidrobomba, 0);
         goodra.assignMove(rayoHielo, 1);
-        goodra.assignMove(psiquicoM, 2);
+        goodra.assignMove(garraDragon, 2);
         goodra.assignMove(dobleRayo, 3);
 
         kommo_o.assignMove(aBocajarro, 0);
@@ -336,7 +336,7 @@ public class Battle {
         baxcalibur.assignMove(tajoUmbrio, 3);
 
         gyarados.assignMove(hidrobomba, 0);
-        gyarados.assignMove(lanzallamas, 1);
+        gyarados.assignMove(rayoHielo, 1);
         gyarados.assignMove(terremoto, 2);
         gyarados.assignMove(rayoHielo, 3);
 
@@ -351,7 +351,7 @@ public class Battle {
         venusaur.assignMove(rayoHielo, 3);
 
         blastoise.assignMove(hidrobomba, 0);
-        blastoise.assignMove(lanzallamas, 1);
+        blastoise.assignMove(rayoHielo, 1);
         blastoise.assignMove(psiquicoM, 2);
         blastoise.assignMove(surf, 3);
 
@@ -365,10 +365,10 @@ public class Battle {
         alakazam.assignMove(bolaSombra, 2);
         alakazam.assignMove(ondaToxica, 3);
 
-        ceruledge.assignMove(pulsoUmbrio, 0);
+        ceruledge.assignMove(bolaSombra, 0);
         ceruledge.assignMove(llamarada, 1);
         ceruledge.assignMove(tajoUmbrio, 2);
-        ceruledge.assignMove(rayoHielo, 3);
+        ceruledge.assignMove(lanzallamas, 3);
 
         umbreon.assignMove(pulsoUmbrio, 0);
         umbreon.assignMove(bolaSombra, 1);
@@ -408,7 +408,7 @@ public class Battle {
         golisopod.assignMove(lanzaMugre, 0);
         golisopod.assignMove(puñoBala, 1);
         golisopod.assignMove(terremoto, 2);
-        golisopod.assignMove(chispazo, 3);
+        golisopod.assignMove(fuerzaBruta, 3);
 
         garchomp.assignMove(terremoto, 0);
         garchomp.assignMove(garraDragon, 1);
@@ -697,9 +697,9 @@ public class Battle {
             }
         }
         if (isTeamDefeated(playerTeam)) {
-            System.out.println("El entrenador rival ha ganado la batalla.");
+            System.out.println("\n¡El entrenador rival ha ganado la batalla!");
         } else {
-            System.out.println("Has ganado la batalla.");
+            System.out.println("\n¡Has ganado la batalla!");
         }
     }
 
