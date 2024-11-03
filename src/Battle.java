@@ -248,8 +248,6 @@ public class Battle {
     public static PKMN lycanroc = new PKMN("Lycanroc", roca, nulo, 75, 115, 65, 55, 105, 82);
     public static PKMN gallade = new PKMN("Gallade", lucha, psiquico, 68, 125, 65, 115, 110, 80);
 
-
-
     static {
         loadMoves();
     }
@@ -347,7 +345,7 @@ public class Battle {
 
         venusaur.assignMove(llueveHojas, 0);
         venusaur.assignMove(cañonFloral, 1);
-        venusaur.assignMove(dobleRayo, 2);
+        venusaur.assignMove(lanzaMugre, 2);
         venusaur.assignMove(rayoHielo, 3);
 
         blastoise.assignMove(hidrobomba, 0);
@@ -547,11 +545,11 @@ public class Battle {
         return false;
     }
 
-    public static void showBattleInfo(PKMN ownPokemon, PKMN rivalPokemon) {
-        System.out.println("\nTu pokemon: " + ownPokemon.getName());
-        System.out.printf("HP: %s/%s%n", ownPokemon.getCurrentHP(), ownPokemon.getHP());
+    public static void showBattleInfo(PKMN rivalPokemon, PKMN ownPokemon) {
         System.out.println("\nPokemon del rival: " + rivalPokemon.getName());
         System.out.printf("HP: %s/%s%n", rivalPokemon.getCurrentHP(), rivalPokemon.getHP());
+        System.out.println("\nTu pokemon: " + ownPokemon.getName());
+        System.out.printf("HP: %s/%s%n", ownPokemon.getCurrentHP(), ownPokemon.getHP());
     }
 
     public static Team selectTeam(Dex pokedex, int teamSize) {
@@ -618,7 +616,7 @@ public class Battle {
 
     public static PKMN changePokemon(Team team) {
         int index = -1;
-        System.out.println("Selecciona un pokemon para continuar: ");
+        System.out.println("\nSelecciona un pokemon para continuar: ");
         team.showTeam();
         do {
             try {
@@ -648,29 +646,26 @@ public class Battle {
         return team.isEmpty();
     }
 
-    public static void executeTurn(PKMN attacker, Move aMove, PKMN defender, Move dMove, Team aTeam, Team dTeam) {
-        useMove(attacker, aMove, defender);
-        if (isPokemonFainted(defender)) {
-            System.out.printf("%n%s ha sido debilitado.%n", defender.getName());
-        } else {
-            useMove(defender, dMove, attacker);
-            if (isPokemonFainted(attacker)) {
-                System.out.printf("%n%s ha sido debilitado.%n", attacker.getName());
+    public static PKMN executeTurn(PKMN playerCurrent, PKMN cpuCurrent, Team playerTeam) {
+        int choice = 1;
+
+        if (playerTeam.getCurrentSize() > 1) {
+            while (choice < 1 || choice > 2) {
+                try {
+                    System.out.println("\nElige una opción:");
+                    System.out.println("1. Atacar");
+                    System.out.println("2. Cambiar Pokémon");
+                    choice = scan.nextInt();
+                    if (choice < 1 || choice > 2) {
+                        System.out.println("Opción inválida.");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Entrada no válida. Ingresa un número.");
+                    scan.nextLine();
+                }
             }
         }
-    }
-
-    public static void battle(Team playerTeam, Team cpuTeam) {
-        PKMN playerCurrent = playerTeam.getPokemon(0);
-        PKMN cpuCurrent = cpuTeam.getPokemon(random.nextInt(playerTeam.getCurrentSize()));
-
-        System.out.println("\n--Tu equipo--\n");
-        playerTeam.showTeam();
-        System.out.println("\n--Equipo rival--\n");
-        cpuTeam.showTeam();
-
-        while (!isTeamDefeated(playerTeam) && !isTeamDefeated(cpuTeam)) {
-            showBattleInfo(playerCurrent, cpuCurrent);
+        if (choice == 1) {
 
             Move playerMove = selectMove(playerCurrent);
             Move cpuMove = selectRandomMove(cpuCurrent);
@@ -679,22 +674,52 @@ public class Battle {
             PKMN secondAttacker = (firstAttacker == playerCurrent) ? cpuCurrent : playerCurrent;
             Move firstMove = (firstAttacker == playerCurrent) ? playerMove : cpuMove;
             Move secondMove = (firstAttacker == playerCurrent) ? cpuMove : playerMove;
-            Team firstTeam = (firstAttacker == playerCurrent) ? playerTeam : cpuTeam;
-            Team secondTeam = (firstAttacker == playerCurrent) ? cpuTeam : playerTeam;
 
-            executeTurn(firstAttacker, firstMove, secondAttacker, secondMove, firstTeam, secondTeam);
+            useMove(firstAttacker, firstMove, secondAttacker);
+            if (isPokemonFainted(secondAttacker)) {
+                System.out.printf("%n%s ha sido debilitado.%n", secondAttacker.getName());
+            } else {
+                useMove(secondAttacker, secondMove, firstAttacker);
+                if (isPokemonFainted(firstAttacker)) {
+                    System.out.printf("%n%s ha sido debilitado.%n", firstAttacker.getName());
+                }
+            }
+        } else {
+            playerCurrent = changePokemon(playerTeam);
+            System.out.println("\nHas elegido a " + playerCurrent.getName());
+            useMove(cpuCurrent, selectRandomMove(cpuCurrent), playerCurrent);
             if (isPokemonFainted(playerCurrent)) {
-                playerTeam.removePokemon(playerCurrent);
-                if (!playerTeam.isEmpty()) {
-                    playerCurrent = changePokemon(playerTeam);
-                }
+                System.out.printf("%n%s ha sido debilitado.%n", playerCurrent.getName());
             }
-            if (isPokemonFainted(cpuCurrent)) {
-                cpuTeam.removePokemon(cpuCurrent);
-                if (!cpuTeam.isEmpty()) {
-                    cpuCurrent = changeRandomPokemon(cpuTeam);
-                }
+        }
+        return playerCurrent;
+    }
+
+    public static boolean verifyFainted(PKMN pokemon, Team team) {
+        if (isPokemonFainted(pokemon)) {
+            team.removePokemon(pokemon);
+            if (!team.isEmpty()) {
+                return true;
             }
+        }
+        return false;
+    }
+
+    public static void battle(Team playerTeam, Team cpuTeam) {
+        PKMN playerCurrent = playerTeam.getPokemon(0);
+        PKMN cpuCurrent = cpuTeam.getPokemon(random.nextInt(playerTeam.getCurrentSize()));
+
+        System.out.println("\n--Equipo rival--\n");
+        cpuTeam.showTeam();
+        System.out.println("\n--Tu equipo--\n");
+        playerTeam.showTeam();
+
+        while (!isTeamDefeated(playerTeam) && !isTeamDefeated(cpuTeam)) {
+            showBattleInfo(cpuCurrent, playerCurrent);
+
+            playerCurrent = executeTurn(playerCurrent, cpuCurrent, playerTeam);
+            playerCurrent = (verifyFainted(playerCurrent, playerTeam)) ? changePokemon(playerTeam) : playerCurrent;
+            cpuCurrent = (verifyFainted(cpuCurrent, cpuTeam)) ? changeRandomPokemon(cpuTeam) : cpuCurrent;
         }
         if (isTeamDefeated(playerTeam)) {
             System.out.println("\n¡El entrenador rival ha ganado la batalla!");
